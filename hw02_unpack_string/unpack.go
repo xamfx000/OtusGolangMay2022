@@ -1,11 +1,10 @@
 package hw02unpackstring
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 	"unicode"
-
-	"github.com/pkg/errors"
 )
 
 var ErrInvalidString = errors.New("invalid string")
