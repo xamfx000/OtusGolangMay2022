@@ -26,8 +26,7 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 	c.mx.Lock()
 	defer c.mx.Unlock()
 	newCacheItem := cacheItem{key: key, value: value}
-	item, ok := c.items[key]
-	if ok {
+	if item, ok := c.items[key]; ok {
 		item.Value = newCacheItem
 		c.queue.MoveToFront(item)
 		return true
@@ -40,14 +39,13 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 	newCacheListItem := &ListItem{Value: newCacheItem}
 	c.items[key] = newCacheListItem
 	c.queue.PushFront(newCacheListItem.Value)
-	return ok
+	return false
 }
 
 func (c *lruCache) Get(key Key) (interface{}, bool) {
 	c.mx.Lock()
 	defer c.mx.Unlock()
-	item, ok := c.items[key]
-	if ok {
+	if item, ok := c.items[key]; ok {
 		c.queue.MoveToFront(item)
 		cacheHitItem := item.Value.(cacheItem)
 		return cacheHitItem.value, ok
