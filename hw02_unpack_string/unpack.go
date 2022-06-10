@@ -20,32 +20,36 @@ func Unpack(s string) (string, error) {
 		return s, nil
 	}
 
-	var charToRepeat rune
+	var charToRepeat string
 	result := strings.Builder{}
-	for _, char := range s {
-		if !unicode.IsDigit(char) {
-			if charToRepeat != 0 {
-				result.WriteRune(charToRepeat)
+	asSymbolsArray := strings.Split(s, "")
+	for _, char := range asSymbolsArray {
+		isCharDigit := isDigit(char)
+		if !isCharDigit {
+			if charToRepeat != "" {
+				result.WriteString(charToRepeat)
 			}
 			charToRepeat = char
 			continue
 		}
-		if unicode.IsDigit(char) {
-			if charToRepeat == 0 {
+		if isCharDigit {
+			if charToRepeat == "" {
 				return "", ErrInvalidString
 			}
 
-			numToRepeat, _ := strconv.Atoi(string(char))
-			result.WriteString(
-				strings.Repeat(string(charToRepeat), numToRepeat),
-			)
-			charToRepeat = 0
+			numToRepeat, _ := strconv.Atoi(char)
+			result.WriteString(strings.Repeat(charToRepeat, numToRepeat))
+			charToRepeat = ""
 			continue
 		}
 	}
-	lastChar := rune(s[len(s)-1]) //nolint
-	if !unicode.IsDigit(lastChar) {
-		result.WriteRune(lastChar)
+	if lastChar := asSymbolsArray[len(asSymbolsArray)-1]; !isDigit(lastChar) {
+		result.WriteString(lastChar)
 	}
 	return result.String(), nil
+}
+
+func isDigit(s string) bool {
+	_, conversionError := strconv.Atoi(s)
+	return conversionError == nil
 }
