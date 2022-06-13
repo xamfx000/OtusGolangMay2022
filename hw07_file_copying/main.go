@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 )
 
 var (
@@ -18,5 +20,14 @@ func init() {
 
 func main() {
 	flag.Parse()
-	// Place your code here.
+	if from == "" || to == "" {
+		fmt.Println("need to specify -from and -to params")
+		os.Exit(0)
+	}
+	err := Copy(from, to, offset, limit)
+	if err != nil {
+		fmt.Printf("%v\n", err.Error())
+		return
+	}
+	println("Done!")
 }
