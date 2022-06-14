@@ -22,12 +22,12 @@ func main() {
 	flag.Parse()
 	if from == "" || to == "" {
 		fmt.Println("need to specify -from and -to params")
-		os.Exit(0)
+		os.Exit(1)
 	}
 	err := Copy(from, to, offset, limit)
 	if err != nil {
 		fmt.Printf("%v\n", err.Error())
-		return
+		os.Exit(1)
 	}
 	println("Done!")
 }
