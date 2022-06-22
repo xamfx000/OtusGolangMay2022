@@ -15,6 +15,37 @@ func TestList(t *testing.T) {
 		require.Nil(t, l.Back())
 	})
 
+	t.Run("fill from back", func(t *testing.T) {
+		l := NewList()
+
+		require.Equal(t, 0, l.Len())
+		require.Nil(t, l.Front())
+		require.Nil(t, l.Back())
+
+		pushedItem := l.PushBack(10)
+		require.Equal(t, &ListItem{Value: 10}, pushedItem)
+		require.Equal(t, l.Front(), l.Back())
+		require.Equal(t, 1, l.Len())
+	})
+
+	t.Run("back becomes front after deletions", func(t *testing.T) {
+		l := NewList()
+
+		require.Equal(t, 0, l.Len())
+		require.Nil(t, l.Front())
+		require.Nil(t, l.Back())
+
+		l.PushBack(10)
+		l.PushBack(20)
+		l.PushBack(30)
+		require.NotEqual(t, l.Front(), l.Back())
+		require.Equal(t, 3, l.Len())
+
+		l.Remove(l.Front())
+		l.Remove(l.Front())
+		require.Equal(t, 30, l.Front().Value)
+	})
+
 	t.Run("complex", func(t *testing.T) {
 		l := NewList()
 

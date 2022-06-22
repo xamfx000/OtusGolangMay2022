@@ -49,17 +49,47 @@ func TestCache(t *testing.T) {
 		require.Nil(t, val)
 	})
 
+	t.Run("delete lru items ", func(t *testing.T) {
+		c := NewCache(3)
+
+		wasInCache := c.Set("aaa", 100)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("bbb", 200)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("ccc", 200)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("ddd", 200)
+		require.False(t, wasInCache)
+
+		val, ok := c.Get("aaa")
+		require.False(t, ok)
+		require.Nil(t, nil, val)
+	})
+
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		c := NewCache(5)
+		c.Set("aaa", 100)
+		c.Set("bbb", 200)
+		c.Set("ccc", 300)
+		c.Set("ddd", 400)
+		c.Set("eee", 500)
+		c.Clear()
+		val, wasInCache := c.Get("aaa")
+		require.False(t, wasInCache)
+		require.Nil(t, val)
+		val, wasInCache = c.Get("eee")
+		require.False(t, wasInCache)
+		require.Nil(t, val)
 	})
 }
 
 func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
-
 	c := NewCache(10)
 	wg := &sync.WaitGroup{}
-	wg.Add(2)
+	wg.Add(3)
 
 	go func() {
 		defer wg.Done()
@@ -73,6 +103,11 @@ func TestCacheMultithreading(t *testing.T) {
 		for i := 0; i < 1_000_000; i++ {
 			c.Get(Key(strconv.Itoa(rand.Intn(1_000_000))))
 		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		c.Clear()
 	}()
 
 	wg.Wait()
