@@ -44,7 +44,7 @@ func TestReadDir_ErrorForNonExistentDirectory(t *testing.T) {
 func TestReadDir_NoEnvInEmptyDir(t *testing.T) {
 	pwd, _ := os.Getwd()
 	dirName := fmt.Sprintf("%s/temp", pwd)
-	_ = os.Mkdir(dirName, 777)
+	_ = os.Mkdir(dirName, 0777)
 	defer func() {
 		_ = os.Remove(dirName)
 	}()

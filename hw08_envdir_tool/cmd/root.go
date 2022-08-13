@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/hw08_envdir_tool/go-envdir/internal"
-
 	"github.com/spf13/cobra"
 )
 
