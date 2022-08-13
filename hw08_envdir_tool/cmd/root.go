@@ -5,13 +5,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hw08_envdir_tool/go-envdir/internal"
 	"os"
+
+	"github.com/hw08_envdir_tool/go-envdir/internal"
 
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the root command
+// rootCmd represents the root command.
 var rootCmd = &cobra.Command{
 	Use: "go-envdir /path/to/environment command [args]",
 	Long: `A longer description that spans multiple lines and likely contains examples
@@ -28,7 +29,6 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-
 }
 
 func Execute() {

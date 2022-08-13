@@ -57,7 +57,7 @@ func readFileFirstLine(filePath string) (string, bool) {
 		return "", true
 	}
 	firstLine = strings.Split(firstLine, "\n")[0]
-	firstLine = strings.Replace(firstLine, "\u0000", "\n", -1)
+	firstLine = strings.ReplaceAll(firstLine, "\u0000", "\n")
 	firstLine = strings.TrimRight(firstLine, " \t")
 
 	return firstLine, false
