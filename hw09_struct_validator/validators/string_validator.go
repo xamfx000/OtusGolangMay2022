@@ -1,7 +1,6 @@
 package validators
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,7 +20,7 @@ func ValidateStringField(validator Validator, val string, name string) error {
 	case "len":
 		expectedLength, err := strconv.ParseInt(validator.Value, 10, 64)
 		if err != nil {
-			return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validator.Value))
+			return errors.Wrap(ErrIntParsing, validator.Value)
 		}
 		return validateStringLen(expectedLength, val, name)
 	case "regexp":
