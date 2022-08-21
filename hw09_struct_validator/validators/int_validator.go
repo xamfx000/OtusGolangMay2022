@@ -1,7 +1,6 @@
 package validators
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -30,7 +29,7 @@ func ValidateIntField(validator Validator, val int64, name string) error {
 func ValidateMinInt(validatorValue string, val int64, name string) error {
 	min, err := strconv.ParseInt(validatorValue, 10, 64)
 	if err != nil {
-		return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validatorValue))
+		return errors.Wrap(ErrIntParsing, validatorValue)
 	}
 	if val < min {
 		return ValidationError{
@@ -44,7 +43,7 @@ func ValidateMinInt(validatorValue string, val int64, name string) error {
 func ValidateMaxInt(validatorValue string, val int64, name string) error {
 	max, err := strconv.ParseInt(validatorValue, 10, 64)
 	if err != nil {
-		return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validatorValue))
+		return errors.Wrap(ErrIntParsing, validatorValue)
 	}
 	if val > max {
 		return ValidationError{
@@ -60,7 +59,7 @@ func ValidateInIntSet(validatorValue string, val int64, name string) error {
 	for _, allowedValue := range stringVals {
 		allowedValueParsed, err := strconv.ParseInt(allowedValue, 10, 64)
 		if err != nil {
-			return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validatorValue))
+			return errors.Wrap(ErrIntParsing, validatorValue)
 		}
 		if allowedValueParsed == val {
 			return nil
