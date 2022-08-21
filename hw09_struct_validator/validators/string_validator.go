@@ -58,11 +58,13 @@ func validateStringLen(validatorValue int64, val string, name string) error {
 
 func validateStringInSet(validatorValue string, val string, name string) error {
 	allowedVals := strings.Split(validatorValue, ",")
-	if !Contains(allowedVals, val) {
-		return ValidationError{
-			Field: name,
-			Err:   errors.Wrap(StringNotInSetError, "field validation failed"),
+	for _, v := range allowedVals {
+		if v == val {
+			return nil
 		}
 	}
-	return nil
+	return ValidationError{
+		Field: name,
+		Err:   errors.Wrap(StringNotInSetError, "field validation failed"),
+	}
 }

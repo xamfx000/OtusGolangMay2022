@@ -25,7 +25,13 @@ var (
 	ValidationParseTagError = errors.New("failed to parse validator tag")
 	UnknownValidatorType    = errors.New("unknown validator type")
 
-	supportedValidators = []string{"len", "regexp", "in", "min", "max", "in"}
+	supportedValidators = map[string]interface{}{
+		"in":     nil,
+		"min":    nil,
+		"max":    nil,
+		"len":    nil,
+		"regexp": nil,
+	}
 )
 
 func ParseValidateTag(tag reflect.StructTag) ([]Validator, error) {
@@ -39,9 +45,9 @@ func ParseValidateTag(tag reflect.StructTag) ([]Validator, error) {
 		if len(parsedValidator) != 2 {
 			return []Validator{}, errors.Wrap(ValidationParseTagError, tag.Get("validate"))
 		}
-		ValidatorType := parsedValidator[0]
-		if !Contains(supportedValidators, ValidatorType) {
-			return []Validator{}, errors.Wrap(UnknownValidatorType, ValidatorType)
+		validatorType := parsedValidator[0]
+		if _, ok := supportedValidators[validatorType]; !ok {
+			return []Validator{}, errors.Wrap(UnknownValidatorType, tag.Get("validate"))
 		}
 		result = append(result, Validator{
 			ValidatorType: parsedValidator[0],
