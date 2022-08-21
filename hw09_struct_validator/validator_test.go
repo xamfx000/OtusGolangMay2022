@@ -204,7 +204,7 @@ var tests = []struct {
 		in: StructWithUnsupportedValidator{
 			ID: 124125,
 		},
-		expectedErr: validators.UnknownValidatorType,
+		expectedErr: validators.ErrUnknownValidatorType,
 	},
 }
 
@@ -217,12 +217,15 @@ func TestValidate(t *testing.T) {
 			var ve ValidationErrors
 			if errors.As(validationResult, &ve) {
 				errorsSlice := prepareErrSliceFromRootErr(ve)
+				expErrSlice := []validators.ValidationError{}
+				if errors.As(tt.expectedErr, &ve) {
+					expErrSlice = prepareErrSliceFromRootErr(ve)
+				}
 				for i, err := range errorsSlice {
-					require.Equal(t, tt.expectedErr.(ValidationErrors)[i].Field, validationResult.(ValidationErrors)[i].Field, i)
-					require.ErrorAs(t, err.Err, &tt.expectedErr.(ValidationErrors)[i].Err)
+					require.ErrorAs(t, err.Err, &expErrSlice[i].Err)
 				}
 			} else {
-				require.ErrorIs(t, validationResult, tt.expectedErr)
+				require.ErrorAs(t, validationResult, &tt.expectedErr)
 			}
 		})
 	}

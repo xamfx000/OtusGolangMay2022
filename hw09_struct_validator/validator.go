@@ -41,29 +41,49 @@ func Validate(v interface{}) error {
 				sliceLen := rv.Field(i).Len()
 				slice := rv.Field(i).Slice(0, sliceLen)
 				for k := 0; k < sliceLen; k++ {
-					err := validateField(slice.Index(k), rvt.Field(i), validator)
-					if err != nil {
-						var ve validators.ValidationError
-						if errors.As(err, &ve) {
-							overallValidationResult = append(overallValidationResult, ve)
-						} else {
-							return err
-						}
+					var done bool
+					overallValidationResult, done, err = processSingleField(
+						slice.Index(k),
+						rvt.Field(i),
+						validator,
+						overallValidationResult,
+					)
+					if done {
+						return err
 					}
 				}
 			}
-			err := validateField(rv.Field(i), rvt.Field(i), validator)
-			if err != nil {
-				var ve validators.ValidationError
-				if errors.As(err, &ve) {
-					overallValidationResult = append(overallValidationResult, ve)
-				} else {
-					return err
-				}
+			var done2 bool
+			overallValidationResult, done2, err = processSingleField(
+				rv.Field(i),
+				rvt.Field(i),
+				validator,
+				overallValidationResult,
+			)
+			if done2 {
+				return err
 			}
 		}
 	}
 	return overallValidationResult
+}
+
+func processSingleField(
+	fieldVal reflect.Value,
+	structField reflect.StructField,
+	validator validators.Validator,
+	overallValidationResult ValidationErrors,
+) (ValidationErrors, bool, error) {
+	err := validateField(fieldVal, structField, validator)
+	if err != nil {
+		var ve validators.ValidationError
+		if errors.As(err, &ve) {
+			overallValidationResult = append(overallValidationResult, ve)
+		} else {
+			return nil, true, err
+		}
+	}
+	return overallValidationResult, false, nil
 }
 
 func validateField(field reflect.Value, structField reflect.StructField, validator validators.Validator) error {
@@ -71,7 +91,7 @@ func validateField(field reflect.Value, structField reflect.StructField, validat
 	if structField.Tag == "" {
 		return nil
 	}
-	switch field.Kind() {
+	switch field.Kind() { //nolint
 	case reflect.Int:
 		return validators.ValidateIntField(validator, field.Int(), fieldName)
 	case reflect.String:
