@@ -2,17 +2,18 @@ package validators
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 var (
-	LengthValidationError = errors.New("invalid length")
-	StringNotInSetError   = errors.New("string not in set")
-	RegexMismatchError    = errors.New("value not match with regex")
-	RegexCompileError     = errors.New("failed to compile regex")
+	ErrLengthValidation = errors.New("invalid length")
+	ErrStringNotInSet   = errors.New("string not in set")
+	ErrRegexMismatch    = errors.New("value not match with regex")
+	ErrRegexCompile     = errors.New("failed to compile regex")
 )
 
 func ValidateStringField(validator Validator, val string, name string) error {
@@ -20,7 +21,7 @@ func ValidateStringField(validator Validator, val string, name string) error {
 	case "len":
 		expectedLength, err := strconv.ParseInt(validator.Value, 10, 64)
 		if err != nil {
-			return errors.Wrap(IntParsingError, fmt.Sprintf("%s", validator.Value))
+			return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validator.Value))
 		}
 		return validateStringLen(expectedLength, val, name)
 	case "regexp":
@@ -34,12 +35,12 @@ func ValidateStringField(validator Validator, val string, name string) error {
 func validateStringRegexpMatch(value string, val string, name string) error {
 	re, err := regexp.Compile(value)
 	if err != nil {
-		return errors.Wrap(RegexCompileError, err.Error())
+		return errors.Wrap(ErrRegexCompile, err.Error())
 	}
 	if !re.MatchString(val) {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(RegexMismatchError, "field validation failed"),
+			Err:   errors.Wrap(ErrRegexMismatch, "field validation failed"),
 		}
 	}
 	return nil
@@ -50,7 +51,7 @@ func validateStringLen(validatorValue int64, val string, name string) error {
 	if int64(length) != validatorValue {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(LengthValidationError, "field validation failed"),
+			Err:   errors.Wrap(ErrLengthValidation, "field validation failed"),
 		}
 	}
 	return nil
@@ -65,6 +66,6 @@ func validateStringInSet(validatorValue string, val string, name string) error {
 	}
 	return ValidationError{
 		Field: name,
-		Err:   errors.Wrap(StringNotInSetError, "field validation failed"),
+		Err:   errors.Wrap(ErrStringNotInSet, "field validation failed"),
 	}
 }

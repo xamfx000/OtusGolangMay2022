@@ -2,16 +2,17 @@ package validators
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 var (
-	MaxIntError      = errors.New("max int")
-	MinIntError      = errors.New("min int")
-	IntNotInSetError = errors.New("not in set int")
-	IntParsingError  = errors.New("failed to parse int")
+	ErrIntExceedsMax = errors.New("max int")
+	ErrIntBelowMin   = errors.New("min int")
+	ErrIntNotInSet   = errors.New("not in set int")
+	ErrIntParsing    = errors.New("failed to parse int")
 )
 
 func ValidateIntField(validator Validator, val int64, name string) error {
@@ -29,12 +30,12 @@ func ValidateIntField(validator Validator, val int64, name string) error {
 func ValidateMinInt(validatorValue string, val int64, name string) error {
 	min, err := strconv.ParseInt(validatorValue, 10, 64)
 	if err != nil {
-		return errors.Wrap(IntParsingError, fmt.Sprintf("%s", validatorValue))
+		return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validatorValue))
 	}
 	if val < min {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(MinIntError, "field validation failed"),
+			Err:   errors.Wrap(ErrIntBelowMin, "field validation failed"),
 		}
 	}
 	return nil
@@ -43,12 +44,12 @@ func ValidateMinInt(validatorValue string, val int64, name string) error {
 func ValidateMaxInt(validatorValue string, val int64, name string) error {
 	max, err := strconv.ParseInt(validatorValue, 10, 64)
 	if err != nil {
-		return errors.Wrap(IntParsingError, fmt.Sprintf("%s", validatorValue))
+		return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validatorValue))
 	}
 	if val > max {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(MaxIntError, "field validation failed"),
+			Err:   errors.Wrap(ErrIntExceedsMax, "field validation failed"),
 		}
 	}
 	return nil
@@ -59,7 +60,7 @@ func ValidateInIntSet(validatorValue string, val int64, name string) error {
 	for _, allowedValue := range stringVals {
 		allowedValueParsed, err := strconv.ParseInt(allowedValue, 10, 64)
 		if err != nil {
-			return errors.Wrap(IntParsingError, fmt.Sprintf("%s", validatorValue))
+			return errors.Wrap(ErrIntParsing, fmt.Sprintf("%s", validatorValue))
 		}
 		if allowedValueParsed == val {
 			return nil
@@ -67,6 +68,6 @@ func ValidateInIntSet(validatorValue string, val int64, name string) error {
 	}
 	return ValidationError{
 		Field: name,
-		Err:   errors.Wrap(IntNotInSetError, "field validation failed"),
+		Err:   errors.Wrap(ErrIntNotInSet, "field validation failed"),
 	}
 }

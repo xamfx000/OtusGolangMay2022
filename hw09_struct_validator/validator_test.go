@@ -71,15 +71,15 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "ID",
-				Err:   validators.LengthValidationError,
+				Err:   validators.ErrLengthValidation,
 			},
 			validators.ValidationError{
 				Field: "Age",
-				Err:   validators.MinIntError,
+				Err:   validators.ErrIntBelowMin,
 			},
 			validators.ValidationError{
 				Field: "Email",
-				Err:   validators.RegexMismatchError,
+				Err:   validators.ErrRegexMismatch,
 			},
 		},
 	},
@@ -93,11 +93,11 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "ID",
-				Err:   validators.LengthValidationError,
+				Err:   validators.ErrLengthValidation,
 			},
 			validators.ValidationError{
 				Field: "Age",
-				Err:   validators.MaxIntError,
+				Err:   validators.ErrIntExceedsMax,
 			},
 		},
 	},
@@ -110,11 +110,11 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "Age",
-				Err:   validators.MaxIntError,
+				Err:   validators.ErrIntExceedsMax,
 			},
 			validators.ValidationError{
 				Field: "Role",
-				Err:   validators.StringNotInSetError,
+				Err:   validators.ErrStringNotInSet,
 			},
 		},
 	},
@@ -129,11 +129,11 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "Phones",
-				Err:   validators.LengthValidationError,
+				Err:   validators.ErrLengthValidation,
 			},
 			validators.ValidationError{
 				Field: "Phones",
-				Err:   validators.LengthValidationError,
+				Err:   validators.ErrLengthValidation,
 			},
 		},
 	},
@@ -144,7 +144,7 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "Code",
-				Err:   validators.IntNotInSetError,
+				Err:   validators.ErrIntNotInSet,
 			},
 		},
 	},
@@ -161,7 +161,7 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "Codes",
-				Err:   validators.MaxIntError,
+				Err:   validators.ErrIntExceedsMax,
 			},
 		},
 	},
@@ -177,7 +177,7 @@ var tests = []struct {
 		in: StructWithInvalidRegex{
 			ID: "dgdf",
 		},
-		expectedErr: validators.RegexCompileError,
+		expectedErr: validators.ErrRegexCompile,
 	},
 	{
 		in: StructWithCombinedValidator{
@@ -186,11 +186,11 @@ var tests = []struct {
 		expectedErr: ValidationErrors{
 			validators.ValidationError{
 				Field: "ID",
-				Err:   validators.IntNotInSetError,
+				Err:   validators.ErrIntNotInSet,
 			},
 			validators.ValidationError{
 				Field: "ID",
-				Err:   validators.MaxIntError,
+				Err:   validators.ErrIntExceedsMax,
 			},
 		},
 	},
@@ -198,7 +198,7 @@ var tests = []struct {
 		in: StructWithInvalidTag{
 			ID: 124125,
 		},
-		expectedErr: validators.IntParsingError,
+		expectedErr: validators.ErrIntParsing,
 	},
 	{
 		in: StructWithUnsupportedValidator{
@@ -219,7 +219,7 @@ func TestValidate(t *testing.T) {
 				errorsSlice := prepareErrSliceFromRootErr(ve)
 				for i, err := range errorsSlice {
 					require.Equal(t, tt.expectedErr.(ValidationErrors)[i].Field, validationResult.(ValidationErrors)[i].Field, i)
-					require.ErrorIs(t, err.Err, tt.expectedErr.(ValidationErrors)[i].Err)
+					require.ErrorAs(t, err.Err, &tt.expectedErr.(ValidationErrors)[i].Err)
 				}
 			} else {
 				require.ErrorIs(t, validationResult, tt.expectedErr)

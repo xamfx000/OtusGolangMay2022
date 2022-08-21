@@ -1,9 +1,10 @@
 package validators
 
 import (
-	"github.com/pkg/errors"
 	"reflect"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type Validator struct {
@@ -35,7 +36,7 @@ var (
 )
 
 func ParseValidateTag(tag reflect.StructTag) ([]Validator, error) {
-	var result []Validator
+	result := []Validator{}
 	structValidationTag := tag.Get("validate")
 	if structValidationTag == "" {
 		return []Validator{}, nil
