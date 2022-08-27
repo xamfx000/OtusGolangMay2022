@@ -1,0 +1,5 @@
+BenchmarkGetDomainStat-10       1000000000               0.1695 ns/op
+BenchmarkGetDomainStat-10       1000000000               0.1285 ns/op
+BenchmarkGetDomainStat-10       1000000000               0.1284 ns/op
+BenchmarkGetDomainStat-10       1000000000               0.1289 ns/op
+BenchmarkGetDomainStat-10       1000000000               0.1288 ns/op
