@@ -1,4 +1,4 @@
-module github.com/hw08_envdir_tool/go-envdir
+module github.com/xamfx000/OtusGolangMay2022/hw08_envdir_tool/go-envdir
 
 go 1.18
 
