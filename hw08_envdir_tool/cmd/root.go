@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hw08_envdir_tool/go-envdir/internal"
 	"github.com/spf13/cobra"
+	"github.com/xamfx000/OtusGolangMay2022/hw08_envdir_tool/go-envdir/internal"
 )
 
 // rootCmd represents the root command.
