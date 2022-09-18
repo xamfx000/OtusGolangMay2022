@@ -1,6 +1,5 @@
 BIN := "./bin/calendar"
 DOCKER_IMG="calendar:develop"
-GOLANG_CI_LINT_IMG="golangci/golangci-lint:v1.49.0"
 POSTGRES_IMG="postgres:13.3"
 POSTGRES_USER="pguser"
 POSTGRES_PASSWORD="pgpass"
@@ -33,10 +32,10 @@ version: build
 	$(BIN) version
 
 test:
-	go test -race ./internal/...
+	go test -race -count=100 ./internal/...
 
 lint:
-	docker run --rm -v $(shell pwd):/app -w /app $GOLANG_CI_LINT_IMG golangci-lint run -v
+	docker run --rm -v $(shell pwd):/app -w /app "golangci/golangci-lint:v1.49.0" golangci-lint run -v
 
 db-up:
 	docker run --hostname pgdb --network MyNetwork --name $(DB_IMG_NAME) -p 5432:5432 -e POSTGRES_USER=$(POSTGRES_USER) -e POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) -e POSTGRES_DB=$(POSTGRES_DB) -d $(POSTGRES_IMG)
