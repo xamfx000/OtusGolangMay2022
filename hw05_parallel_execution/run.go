@@ -27,6 +27,7 @@ func Run(tasks []Task, n, m int) error {
 		guard <- struct{}{}
 		go func(t Task) {
 			defer wg.Done()
+			defer releaseGoRoutineQuota(guard)
 			select {
 			case <-ctx.Done():
 				return
@@ -45,4 +46,8 @@ func Run(tasks []Task, n, m int) error {
 		return ErrErrorsLimitExceeded
 	}
 	return nil
+}
+
+func releaseGoRoutineQuota(ch <-chan struct{}) {
+	<-ch
 }

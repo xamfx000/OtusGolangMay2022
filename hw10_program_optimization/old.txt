@@ -1,0 +1,5 @@
+BenchmarkGetDomainStat-10       1000000000               0.3490 ns/op          0 B/op          0 allocs/op
+BenchmarkGetDomainStat-10       1000000000               0.3515 ns/op          0 B/op          0 allocs/op
+BenchmarkGetDomainStat-10       1000000000               0.3540 ns/op          0 B/op          0 allocs/op
+BenchmarkGetDomainStat-10       1000000000               0.3512 ns/op          0 B/op          0 allocs/op
+BenchmarkGetDomainStat-10       1000000000               0.3514 ns/op          0 B/op          0 allocs/op
