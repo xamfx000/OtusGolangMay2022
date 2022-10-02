@@ -61,6 +61,39 @@ func TestPipeline(t *testing.T) {
 			int64(sleepPerStage)*int64(len(stages)+len(data)-1)+int64(fault))
 	})
 
+	t.Run("empty stage set", func(t *testing.T) {
+		in := make(Bi)
+		data := []int{1, 2, 3, 4, 5}
+
+		go func() {
+			for _, v := range data {
+				in <- v
+			}
+			close(in)
+		}()
+
+		result := []int{}
+		for s := range ExecutePipeline(in, nil, []Stage{}...) {
+			result = append(result, s.(int))
+		}
+
+		require.Equal(t, data, result)
+	})
+
+	t.Run("nil stage in pipeline", func(t *testing.T) {
+		in := make(Bi)
+		data := []int{1, 2, 3, 4, 5}
+
+		go func() {
+			for _, v := range data {
+				in <- v
+			}
+			close(in)
+		}()
+
+		require.Panics(t, func() { ExecutePipeline(in, nil, nil) })
+	})
+
 	t.Run("done case", func(t *testing.T) {
 		in := make(Bi)
 		done := make(Bi)
