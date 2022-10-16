@@ -38,27 +38,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	for {
-		select {
-		case <-ctx.Done():
-			cancel()
-			fmt.Println("Context deadline exceeded")
-			os.Exit(0)
-		default:
-			go func() {
-				err = client.Receive()
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-			}()
-			go func() {
-				err = client.Send()
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-			}()
+	go func() {
+		err = client.Receive()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
+	}()
+	go func() {
+		err = client.Send()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}()
+	select {
+	case <-ctx.Done():
+		cancel()
 	}
 }
