@@ -52,8 +52,6 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-	select {
-	case <-ctx.Done():
-		cancel()
-	}
+	<-ctx.Done()
+	cancel()
 }
