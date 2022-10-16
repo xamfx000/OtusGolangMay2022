@@ -14,10 +14,15 @@ type Logger struct {
 	Level string `toml:"level"`
 }
 type DB struct {
-	InMemoryStorage bool   `toml:"in_memory_storage"`
-	URI             string `toml:"uri"`
+	StorageType string `toml:"storage_type"` // sql|in_memory
+	URI         string `toml:"uri"`
 }
 type Server struct {
 	Host string `toml:"host"`
 	Port int    `toml:"port"`
 }
+
+const (
+	SQLStorage      = "sql"
+	InMemoryStorage = "in_memory"
+)

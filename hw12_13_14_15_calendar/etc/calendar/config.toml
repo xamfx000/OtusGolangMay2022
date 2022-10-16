@@ -2,7 +2,7 @@
 level = "INFO"
 
 [db]
-in_memory_storage = false
+storage_type = "sql"
 uri = "localhost:5432/postgres?user=pguser&password=pgpass"
 
 [server]

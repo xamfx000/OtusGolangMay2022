@@ -104,11 +104,11 @@ func (s *Storage) Update(e models.Event) error {
 	return err
 }
 
-func (s *Storage) Delete(ID string) error {
+func (s *Storage) Delete(id string) error {
 	_, err := s.db.Exec(
 		`delete from events 
 			where id = $1`,
-		ID,
+		id,
 	)
 	return err
 }

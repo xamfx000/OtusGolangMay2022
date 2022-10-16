@@ -13,6 +13,8 @@ type Storage struct {
 	mu sync.RWMutex
 }
 
+const Day = 24 * 3600
+
 func New(m map[string]models.Event) *Storage {
 	return &Storage{m: m, mu: sync.RWMutex{}}
 }
@@ -47,9 +49,9 @@ func (s *Storage) Update(e models.Event) error {
 	return nil
 }
 
-func (s *Storage) Delete(Id string) error {
+func (s *Storage) Delete(id string) error {
 	s.mu.Lock()
-	delete(s.m, Id)
+	delete(s.m, id)
 	s.mu.Unlock()
 	return nil
 }
@@ -58,7 +60,7 @@ func (s *Storage) EventsOnDay(dateTime int64) ([]models.Event, error) {
 	s.mu.RLock()
 	events := []models.Event{}
 	for _, e := range s.m {
-		if e.StartTime >= dateTime && e.StartTime <= dateTime+24*3600 {
+		if e.StartTime >= dateTime && e.StartTime <= dateTime+Day {
 			events = append(events, e)
 		}
 	}

@@ -43,9 +43,10 @@ func main() {
 	}
 
 	var eventStorage storage.EventsStorage
-	if config.DB.InMemoryStorage {
+	if config.DB.StorageType == InMemoryStorage {
 		eventStorage = memorystorage.New(map[string]models.Event{})
-	} else {
+	}
+	if config.DB.StorageType == SQLStorage {
 		db, err := sqlx.Open("pgx", config.DB.URI)
 		if err != nil {
 			fmt.Println("failed to open database: " + err.Error())
