@@ -62,4 +62,13 @@ func TestTelnetClient(t *testing.T) {
 
 		wg.Wait()
 	})
+	t.Run("invalid host", func(t *testing.T) {
+		l, err := net.Listen("tcp", "127.0.0.1:")
+		require.NoError(t, err)
+		defer func() { require.NoError(t, l.Close()) }()
+		in := &bytes.Buffer{}
+		out := &bytes.Buffer{}
+		client := NewTelnetClient("invalidHost:4444", timeout, ioutil.NopCloser(in), out)
+		require.Error(t, client.Connect())
+	})
 }

@@ -1,0 +1,10 @@
+[logger]
+level = "INFO"
+
+[db]
+storage_type = "sql"
+uri = "localhost:5432/postgres?user=pguser&password=pgpass"
+
+[server]
+host = "0.0.0.0"
+port = 80

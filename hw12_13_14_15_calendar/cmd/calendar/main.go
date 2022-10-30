@@ -3,21 +3,28 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/app"
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/logger"
-	internalhttp "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/server/http"
-	memorystorage "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/BurntSushi/toml"
+	_ "github.com/jackc/pgx/stdlib"
+	"github.com/jmoiron/sqlx"
+	"github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/app"
+	"github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/logger"
+	"github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/models"
+	internalhttp "github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/server/http"
+	"github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/storage"
+	memorystorage "github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/storage/memory"
+	sqlstorage "github.com/xamfx/OtusGolangMay2022/hw12_13_14_15_calendar/internal/storage/sql"
 )
 
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "/etc/calendar/config.toml", "Path to configuration file")
+	flag.StringVar(&configFile, "config", "etc/calendar/config.toml", "Path to configuration file")
 }
 
 func main() {
@@ -29,12 +36,30 @@ func main() {
 	}
 
 	config := NewConfig()
-	logg := logger.New(config.Logger.Level)
+	_, err := toml.DecodeFile(configFile, &config)
+	if err != nil {
+		fmt.Println("failed to parse config file: " + err.Error())
+		os.Exit(1)
+	}
 
-	storage := memorystorage.New()
-	calendar := app.New(logg, storage)
+	var eventStorage storage.EventsStorage
+	if config.DB.StorageType == InMemoryStorage {
+		eventStorage = memorystorage.New(map[string]models.Event{})
+	}
+	if config.DB.StorageType == SQLStorage {
+		db, err := sqlx.Open("pgx", config.DB.URI)
+		if err != nil {
+			fmt.Println("failed to open database: " + err.Error())
+			os.Exit(1)
+		}
+		eventStorage = sqlstorage.New(*db)
+	}
+	logg := logger.New(config.Logger.Level)
+	calendar := app.New(logg, eventStorage)
 
 	server := internalhttp.NewServer(logg, calendar)
+	server.Host = config.Server.Host
+	server.Port = config.Server.Port
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
