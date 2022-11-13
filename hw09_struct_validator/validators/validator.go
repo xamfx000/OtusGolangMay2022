@@ -23,8 +23,9 @@ type ValidationErrorMessage struct {
 }
 
 var (
-	ErrValidationTagParse   = errors.New("failed to parse validator tag")
-	ErrUnknownValidatorType = errors.New("unknown validator type")
+	ErrValidationTagParse    = errors.New("failed to parse validator tag")
+	ErrUnknownValidatorType  = errors.New("unknown validator type")
+	ErrUnknownTypeToValidate = errors.New("unknown type to validate")
 
 	supportedValidators = map[string]interface{}{
 		"in":     nil,

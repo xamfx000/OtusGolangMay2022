@@ -41,26 +41,25 @@ func Validate(v interface{}) error {
 				sliceLen := rv.Field(i).Len()
 				slice := rv.Field(i).Slice(0, sliceLen)
 				for k := 0; k < sliceLen; k++ {
-					var done bool
-					overallValidationResult, done, err = processSingleField(
+					overallValidationResult, err = processSingleField(
 						slice.Index(k),
 						rvt.Field(i),
 						validator,
 						overallValidationResult,
 					)
-					if done {
+					if err != nil {
 						return err
 					}
 				}
+				continue
 			}
-			var done2 bool
-			overallValidationResult, done2, err = processSingleField(
+			overallValidationResult, err = processSingleField(
 				rv.Field(i),
 				rvt.Field(i),
 				validator,
 				overallValidationResult,
 			)
-			if done2 {
+			if err != nil {
 				return err
 			}
 		}
@@ -73,17 +72,16 @@ func processSingleField(
 	structField reflect.StructField,
 	validator validators.Validator,
 	overallValidationResult ValidationErrors,
-) (ValidationErrors, bool, error) {
+) (ValidationErrors, error) {
 	err := validateField(fieldVal, structField, validator)
 	if err != nil {
 		var ve validators.ValidationError
-		if errors.As(err, &ve) {
-			overallValidationResult = append(overallValidationResult, ve)
-		} else {
-			return nil, true, err
+		if !errors.As(err, &ve) {
+			return nil, err
 		}
+		overallValidationResult = append(overallValidationResult, ve)
 	}
-	return overallValidationResult, false, nil
+	return overallValidationResult, nil
 }
 
 func validateField(field reflect.Value, structField reflect.StructField, validator validators.Validator) error {
@@ -97,6 +95,6 @@ func validateField(field reflect.Value, structField reflect.StructField, validat
 	case reflect.String:
 		return validators.ValidateStringField(validator, field.String(), fieldName)
 	default:
-		return nil
+		return validators.ErrUnknownTypeToValidate
 	}
 }

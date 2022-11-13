@@ -29,12 +29,12 @@ func ValidateIntField(validator Validator, val int64, name string) error {
 func ValidateMinInt(validatorValue string, val int64, name string) error {
 	min, err := strconv.ParseInt(validatorValue, 10, 64)
 	if err != nil {
-		return errors.Wrap(ErrIntParsing, validatorValue)
+		return ErrIntParsing
 	}
 	if val < min {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(ErrIntBelowMin, "field validation failed"),
+			Err:   ErrIntBelowMin,
 		}
 	}
 	return nil
@@ -43,12 +43,12 @@ func ValidateMinInt(validatorValue string, val int64, name string) error {
 func ValidateMaxInt(validatorValue string, val int64, name string) error {
 	max, err := strconv.ParseInt(validatorValue, 10, 64)
 	if err != nil {
-		return errors.Wrap(ErrIntParsing, validatorValue)
+		return ErrIntParsing
 	}
 	if val > max {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(ErrIntExceedsMax, "field validation failed"),
+			Err:   ErrIntExceedsMax,
 		}
 	}
 	return nil
@@ -59,7 +59,7 @@ func ValidateInIntSet(validatorValue string, val int64, name string) error {
 	for _, allowedValue := range stringVals {
 		allowedValueParsed, err := strconv.ParseInt(allowedValue, 10, 64)
 		if err != nil {
-			return errors.Wrap(ErrIntParsing, validatorValue)
+			return errors.Wrap(ErrIntParsing, allowedValue)
 		}
 		if allowedValueParsed == val {
 			return nil
@@ -67,6 +67,6 @@ func ValidateInIntSet(validatorValue string, val int64, name string) error {
 	}
 	return ValidationError{
 		Field: name,
-		Err:   errors.Wrap(ErrIntNotInSet, "field validation failed"),
+		Err:   ErrIntNotInSet,
 	}
 }

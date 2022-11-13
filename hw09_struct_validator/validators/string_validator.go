@@ -31,26 +31,26 @@ func ValidateStringField(validator Validator, val string, name string) error {
 	return nil
 }
 
-func validateStringRegexpMatch(value string, val string, name string) error {
-	re, err := regexp.Compile(value)
+func validateStringRegexpMatch(validatorValue string, val string, name string) error {
+	re, err := regexp.Compile(validatorValue)
 	if err != nil {
-		return errors.Wrap(ErrRegexCompile, err.Error())
+		return ErrRegexCompile
 	}
 	if !re.MatchString(val) {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(ErrRegexMismatch, "field validation failed"),
+			Err:   ErrRegexMismatch,
 		}
 	}
 	return nil
 }
 
 func validateStringLen(validatorValue int64, val string, name string) error {
-	length := len(val)
+	length := len(strings.Split(val, ""))
 	if int64(length) != validatorValue {
 		return ValidationError{
 			Field: name,
-			Err:   errors.Wrap(ErrLengthValidation, "field validation failed"),
+			Err:   ErrLengthValidation,
 		}
 	}
 	return nil
@@ -65,6 +65,6 @@ func validateStringInSet(validatorValue string, val string, name string) error {
 	}
 	return ValidationError{
 		Field: name,
-		Err:   errors.Wrap(ErrStringNotInSet, "field validation failed"),
+		Err:   ErrStringNotInSet,
 	}
 }
